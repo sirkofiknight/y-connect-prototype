@@ -302,7 +302,8 @@ function resetAll() {
 // Cross-site cookies (frontend and API on different domains, e.g. Vercel + Render)
 // require SameSite=None with Secure; same-site local dev needs Lax without Secure,
 // since browsers only honor Secure cookies over HTTPS.
-const crossSite = process.env.NODE_ENV === "production";
+// See lib/logger.ts for why VERCEL is checked alongside NODE_ENV.
+const crossSite = process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL);
 const sessionCookieOptions = { httpOnly: true, sameSite: crossSite ? ("none" as const) : ("lax" as const), secure: crossSite };
 
 function currentUser(req: Request): User | null {
