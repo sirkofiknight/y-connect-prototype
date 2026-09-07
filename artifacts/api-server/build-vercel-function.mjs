@@ -26,4 +26,12 @@ await esbuild({
   outfile: path.resolve(repoRoot, "artifacts/y-connect/api/index.cjs"),
   logLevel: "info",
   external: ["*.node"],
+  // Bake "production" in at build time instead of trusting Vercel to set NODE_ENV (or
+  // VERCEL) the same way at runtime as it does at build time for a custom serverless
+  // function — that assumption was already tried and didn't hold. This replaces every
+  // `process.env.NODE_ENV` reference in the bundle with the literal string, so the
+  // dev-only pino-pretty transport branch (which crashed the whole function on boot,
+  // since its worker-thread file isn't in this single bundled file) is compiled out
+  // entirely — there is no environment check left at runtime to get wrong.
+  define: { "process.env.NODE_ENV": '"production"' },
 });
