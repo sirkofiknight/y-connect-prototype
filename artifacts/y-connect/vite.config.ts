@@ -72,6 +72,16 @@ export default defineConfig({
     fs: {
       strict: true,
     },
+    // Local `vite dev` only: Replit's own router proxies /api in the hosted workspace,
+    // but this lets `pnpm --filter @workspace/y-connect run dev` work against a
+    // locally running api-server outside of Replit. Defaults to the port the
+    // `pnpm dev` root script (scripts/src/dev.ts) starts the api-server on.
+    proxy: {
+      '/api': {
+        target: process.env.API_PROXY_TARGET ?? 'http://localhost:8090',
+        changeOrigin: true,
+      },
+    },
   },
   preview: {
     port,

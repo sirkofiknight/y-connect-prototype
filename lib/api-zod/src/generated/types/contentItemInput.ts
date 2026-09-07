@@ -6,15 +6,14 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface ContentItem {
-  id: number;
+export interface ContentItemInput {
   title: string;
-  slug: string;
+  slug?: string;
   category: string;
   mediaType: string;
-  excerpt: string;
+  excerpt?: string;
   body?: string;
-  duration: string;
+  duration?: string;
   featured?: boolean;
   reviewStatus?: string;
 }

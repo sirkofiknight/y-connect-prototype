@@ -82,6 +82,21 @@ paths:
               schema:
                 type: array
                 items: { $ref: "#/components/schemas/ServicePoint" }
+    post:
+      operationId: createServicePoint
+      tags: [staff]
+      summary: Add a service point to the directory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ServicePointInput" }
+      responses:
+        "201":
+          description: Service point
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ServicePoint" }
   /services/{id}:
     get:
       operationId: getService
@@ -98,6 +113,37 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ServicePoint" }
+    patch:
+      operationId: updateServicePoint
+      tags: [staff]
+      summary: Edit a service point
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ServicePointInput" }
+      responses:
+        "200":
+          description: Updated service point
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ServicePoint" }
+  /assessment-questions:
+    get:
+      operationId: getAssessmentQuestions
+      tags: [public]
+      summary: Get the deterministic self-assessment rubric
+      responses:
+        "200":
+          description: Assessment question set
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AssessmentQuestionSet" }
   /assessments:
     post:
       operationId: createAssessment
@@ -477,6 +523,219 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/StaffUser" }
+  /admin/users/{id}/status:
+    patch:
+      operationId: updateStaffUserStatus
+      tags: [staff]
+      summary: Suspend or reactivate a staff account
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StaffUserStatusInput" }
+      responses:
+        "200":
+          description: Updated staff user
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StaffUser" }
+  /admin/users/{id}:
+    delete:
+      operationId: deleteStaffUser
+      tags: [staff]
+      summary: Remove a staff account
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "204": { description: Removed }
+  /admin/content:
+    get:
+      operationId: listAllContent
+      tags: [staff]
+      summary: List all learning content, including drafts
+      responses:
+        "200":
+          description: All content items
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ContentItem" }
+    post:
+      operationId: createContent
+      tags: [staff]
+      summary: Create a learning content item (starts as draft)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ContentItemInput" }
+      responses:
+        "201":
+          description: Content item
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContentItem" }
+  /admin/content/{id}:
+    patch:
+      operationId: updateContent
+      tags: [staff]
+      summary: Update or approve a learning content item
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ContentItemInput" }
+      responses:
+        "200":
+          description: Updated content item
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContentItem" }
+  /admin/reset:
+    post:
+      operationId: resetDemoData
+      tags: [public]
+      summary: Reset all synthetic demo data back to the seeded state
+      responses:
+        "200":
+          description: Reset acknowledged
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok]
+                properties:
+                  ok: { type: boolean }
+  /cases/{id}/consent:
+    post:
+      operationId: updateCaseConsent
+      tags: [staff]
+      summary: Update the consent status recorded for a case
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CaseConsentInput" }
+      responses:
+        "200":
+          description: Updated case
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ClientCase" }
+  /notifications:
+    get:
+      operationId: listNotifications
+      tags: [staff]
+      summary: Get the current user's notifications
+      responses:
+        "200":
+          description: Notifications
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/NotificationFeed" }
+  /notifications/{id}/read:
+    post:
+      operationId: markNotificationRead
+      tags: [staff]
+      summary: Mark a notification as read
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Updated notification
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Notification" }
+  /reminders:
+    get:
+      operationId: listReminders
+      tags: [staff]
+      summary: List reminders (simulated SMS/USSD and in-app)
+      responses:
+        "200":
+          description: Reminders
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Reminder" }
+  /reminders/process:
+    post:
+      operationId: processReminders
+      tags: [staff]
+      summary: Process due reminders (simulated delivery, no real send)
+      responses:
+        "200":
+          description: Processing result
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ReminderProcessResult" }
+  /rights/escalations:
+    get:
+      operationId: listRightsEscalations
+      tags: [staff]
+      summary: List rights/legal escalations
+      responses:
+        "200":
+          description: Rights escalations
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/RightsEscalation" }
+    post:
+      operationId: createRightsEscalation
+      tags: [staff]
+      summary: Raise a rights/legal escalation for a case
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RightsEscalationInput" }
+      responses:
+        "201":
+          description: Rights escalation
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RightsEscalation" }
+  /rights/escalations/{id}/resolve:
+    post:
+      operationId: resolveRightsEscalation
+      tags: [staff]
+      summary: Resolve a rights/legal escalation
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Updated escalation
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RightsEscalation" }
 components:
   schemas:
     HealthStatus:
@@ -499,11 +758,40 @@ components:
         body: { type: string }
         duration: { type: string }
         featured: { type: boolean }
+        reviewStatus: { type: string }
+    ContentItemInput:
+      type: object
+      required: [title, category, mediaType]
+      properties:
+        title: { type: string }
+        slug: { type: string }
+        category: { type: string }
+        mediaType: { type: string }
+        excerpt: { type: string }
+        body: { type: string }
+        duration: { type: string }
+        featured: { type: boolean }
+        reviewStatus: { type: string }
     ServicePoint:
       type: object
       required: [id, name, type, district, address, latitude, longitude, services, hours, phone]
       properties:
         id: { type: integer }
+        name: { type: string }
+        type: { type: string }
+        district: { type: string }
+        address: { type: string }
+        latitude: { type: number }
+        longitude: { type: number }
+        services:
+          type: array
+          items: { type: string }
+        hours: { type: string }
+        phone: { type: string }
+    ServicePointInput:
+      type: object
+      required: [name, type, district]
+      properties:
         name: { type: string }
         type: { type: string }
         district: { type: string }
@@ -532,6 +820,32 @@ components:
         pathway: { type: string }
         urgent: { type: boolean }
         safeguardingFlag: { type: boolean }
+        pregnant: { type: boolean }
+        engineVersion: { type: string }
+    AssessmentQuestionOption:
+      type: object
+      required: [value, label]
+      properties:
+        value: { type: string }
+        label: { type: string }
+    AssessmentQuestion:
+      type: object
+      required: [code, prompt, inputType]
+      properties:
+        code: { type: string }
+        prompt: { type: string }
+        inputType: { type: string }
+        options:
+          type: array
+          items: { $ref: "#/components/schemas/AssessmentQuestionOption" }
+    AssessmentQuestionSet:
+      type: object
+      required: [engineVersion, questions]
+      properties:
+        engineVersion: { type: string }
+        questions:
+          type: array
+          items: { $ref: "#/components/schemas/AssessmentQuestion" }
     SupportRequestInput:
       type: object
       required: [requestedRole, preferredContact]
@@ -630,9 +944,54 @@ components:
         title: { type: string }
         body: { type: string }
         unread: { type: boolean }
+        createdAt: { type: string }
+    NotificationFeed:
+      type: object
+      required: [items, unreadCount]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Notification" }
+        unreadCount: { type: integer }
+    Reminder:
+      type: object
+      required: [id, relatedType, relatedId, recipientType, recipientRef, channel, message, sendAt, status]
+      properties:
+        id: { type: integer }
+        relatedType: { type: string }
+        relatedId: { type: integer }
+        recipientType: { type: string }
+        recipientRef: { type: string }
+        channel: { type: string }
+        message: { type: string }
+        sendAt: { type: string }
+        status: { type: string }
+        createdAt: { type: string }
+    ReminderProcessResult:
+      type: object
+      required: [processed, total]
+      properties:
+        processed: { type: integer }
+        total: { type: integer }
+    RightsEscalationInput:
+      type: object
+      required: [caseId, note]
+      properties:
+        caseId: { type: integer }
+        note: { type: string }
+    RightsEscalation:
+      type: object
+      required: [id, caseRef, note, raisedBy, status, createdAt]
+      properties:
+        id: { type: integer }
+        caseRef: { type: string }
+        note: { type: string }
+        raisedBy: { type: string }
+        status: { type: string }
+        createdAt: { type: string }
     ClientCase:
       type: object
-      required: [id, caseRef, alias, subtype, district, status, riskLevel, assignedTo]
+      required: [id, caseRef, alias, subtype, district, status, riskLevel, assignedTo, consentStatus]
       properties:
         id: { type: integer }
         caseRef: { type: string }
@@ -642,6 +1001,12 @@ components:
         status: { type: string }
         riskLevel: { type: string }
         assignedTo: { type: string }
+        consentStatus: { type: string }
+    CaseConsentInput:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string }
     FollowupInput:
       type: object
       required: [caseId, type, dueDate]
@@ -772,4 +1137,10 @@ components:
         email: { type: string }
         role: { type: string }
         district: { type: string }
+        password: { type: string }
+    StaffUserStatusInput:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string }
 

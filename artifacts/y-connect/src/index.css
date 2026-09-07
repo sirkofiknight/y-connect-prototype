@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Montserrat:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @plugin "@tailwindcss/typography";
@@ -113,9 +113,9 @@
   --chart-3: 194 43% 31%;
   --chart-4: 6 61% 58%;
   --chart-5: 287 28% 59%;
-  --app-font-sans: 'DM Sans', sans-serif;
-  --app-font-serif: 'Fraunces', serif;
-  --app-font-mono: 'DM Mono', monospace;
+  --app-font-sans: 'Montserrat', sans-serif;
+  --app-font-serif: 'Montserrat', sans-serif;
+  --app-font-mono: 'Montserrat', sans-serif;
   --radius: 0.85rem;
   --shadow-2xs: 0 1px 2px hsl(194 43% 18% / .04);
   --shadow-xs: 0 2px 8px hsl(194 43% 18% / .06);
@@ -264,8 +264,8 @@
 }
 
 @layer utilities {
-  .display-font { font-family: var(--app-font-serif); }
-  .mono { font-family: var(--app-font-mono); letter-spacing: .02em; }
+  .display-font { font-family: var(--app-font-sans); font-weight: 700; }
+  .mono { font-family: var(--app-font-sans); letter-spacing: .08em; }
   .soft-grid { background-image: linear-gradient(hsl(var(--border) / .38) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border) / .38) 1px, transparent 1px); background-size: 30px 30px; }
   .page-in { animation: page-in .45s ease-out both; }
   .rise-in { animation: rise-in .5s ease-out both; }

@@ -6,10 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface StaffUserInput {
-  name: string;
-  email: string;
-  role: string;
-  district: string;
-  password?: string;
+export interface RightsEscalation {
+  id: number;
+  caseRef: string;
+  note: string;
+  raisedBy: string;
+  status: string;
+  createdAt: string;
 }

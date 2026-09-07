@@ -5,11 +5,9 @@
  * Y-Connect prototype API for synthetic data and discreet coordination workflows.
  * OpenAPI spec version: 0.1.0
  */
+import type { AssessmentQuestion } from './assessmentQuestion';
 
-export interface StaffUserInput {
-  name: string;
-  email: string;
-  role: string;
-  district: string;
-  password?: string;
+export interface AssessmentQuestionSet {
+  engineVersion: string;
+  questions: AssessmentQuestion[];
 }

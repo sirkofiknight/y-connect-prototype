@@ -8,7 +8,7 @@ import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 import {
   AdminUsersPage, AssessmentResultPage, AssessPage, AuditPage, CasesPage, ConcernPage, ConnectPage, ConnectRequestsPage,
   ContentDetailPage, DashboardPage, DirectoryPage, EidDetailPage, EidPage, FollowupCreatePage, FollowupDetailPage, FollowupsPage,
-  HomePage, LearnPage, LoginPage, ReferralDetailPage, ReferralsPage, ReportsPage, RightsPage, SafeguardingPage,
+  HomePage, LearnPage, LoginPage, ReferralDetailPage, ReferralsPage, ReportsPage, RightsEscalationsPage, RightsPage, SafeguardingPage,
   AdminContentPage, AdminDirectoryPage,
 } from '@/pages/app-pages';
 
@@ -42,6 +42,7 @@ function Router() {
     <Route path="/eid" component={EidPage} />
     <Route path="/eid/:id" component={EidDetailPage} />
     <Route path="/connect-requests" component={ConnectRequestsPage} />
+    <Route path="/rights/escalations" component={RightsEscalationsPage} />
     <Route path="/safeguarding" component={SafeguardingPage} />
     <Route path="/reports" component={ReportsPage} />
     <Route path="/audit" component={AuditPage} />

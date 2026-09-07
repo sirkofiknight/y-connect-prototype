@@ -6,14 +6,15 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface ClientCase {
+export interface Reminder {
   id: number;
-  caseRef: string;
-  alias: string;
-  subtype: string;
-  district: string;
+  relatedType: string;
+  relatedId: number;
+  recipientType: string;
+  recipientRef: string;
+  channel: string;
+  message: string;
+  sendAt: string;
   status: string;
-  riskLevel: string;
-  assignedTo: string;
-  consentStatus: string;
+  createdAt?: string;
 }

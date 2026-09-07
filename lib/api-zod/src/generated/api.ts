@@ -33,7 +33,8 @@ export const ListContentResponseItem = zod.object({
   "excerpt": zod.string(),
   "body": zod.string().optional(),
   "duration": zod.string(),
-  "featured": zod.boolean().optional()
+  "featured": zod.boolean().optional(),
+  "reviewStatus": zod.string().optional()
 })
 export const ListContentResponse = zod.array(ListContentResponseItem)
 
@@ -54,7 +55,8 @@ export const GetContentResponse = zod.object({
   "excerpt": zod.string(),
   "body": zod.string().optional(),
   "duration": zod.string(),
-  "featured": zod.boolean().optional()
+  "featured": zod.boolean().optional(),
+  "reviewStatus": zod.string().optional()
 })
 
 
@@ -82,6 +84,35 @@ export const ListServicesResponse = zod.array(ListServicesResponseItem)
 
 
 /**
+ * @summary Add a service point to the directory
+ */
+export const CreateServicePointBody = zod.object({
+  "name": zod.string(),
+  "type": zod.string(),
+  "district": zod.string(),
+  "address": zod.string().optional(),
+  "latitude": zod.number().optional(),
+  "longitude": zod.number().optional(),
+  "services": zod.array(zod.string()).optional(),
+  "hours": zod.string().optional(),
+  "phone": zod.string().optional()
+})
+
+export const CreateServicePointResponse = zod.object({
+  "id": zod.number().int(),
+  "name": zod.string(),
+  "type": zod.string(),
+  "district": zod.string(),
+  "address": zod.string(),
+  "latitude": zod.number(),
+  "longitude": zod.number(),
+  "services": zod.array(zod.string()),
+  "hours": zod.string(),
+  "phone": zod.string()
+})
+
+
+/**
  * @summary Get one service point
  */
 export const GetServiceParams = zod.object({
@@ -103,6 +134,56 @@ export const GetServiceResponse = zod.object({
 
 
 /**
+ * @summary Edit a service point
+ */
+export const UpdateServicePointParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+export const UpdateServicePointBody = zod.object({
+  "name": zod.string(),
+  "type": zod.string(),
+  "district": zod.string(),
+  "address": zod.string().optional(),
+  "latitude": zod.number().optional(),
+  "longitude": zod.number().optional(),
+  "services": zod.array(zod.string()).optional(),
+  "hours": zod.string().optional(),
+  "phone": zod.string().optional()
+})
+
+export const UpdateServicePointResponse = zod.object({
+  "id": zod.number().int(),
+  "name": zod.string(),
+  "type": zod.string(),
+  "district": zod.string(),
+  "address": zod.string(),
+  "latitude": zod.number(),
+  "longitude": zod.number(),
+  "services": zod.array(zod.string()),
+  "hours": zod.string(),
+  "phone": zod.string()
+})
+
+
+/**
+ * @summary Get the deterministic self-assessment rubric
+ */
+export const GetAssessmentQuestionsResponse = zod.object({
+  "engineVersion": zod.string(),
+  "questions": zod.array(zod.object({
+  "code": zod.string(),
+  "prompt": zod.string(),
+  "inputType": zod.string(),
+  "options": zod.array(zod.object({
+  "value": zod.string(),
+  "label": zod.string()
+})).optional()
+}))
+})
+
+
+/**
  * @summary Score a deterministic self-assessment
  */
 export const CreateAssessmentBody = zod.object({
@@ -115,7 +196,9 @@ export const CreateAssessmentResponse = zod.object({
   "band": zod.string(),
   "pathway": zod.string(),
   "urgent": zod.boolean(),
-  "safeguardingFlag": zod.boolean()
+  "safeguardingFlag": zod.boolean(),
+  "pregnant": zod.boolean().optional(),
+  "engineVersion": zod.string().optional()
 })
 
 
@@ -132,7 +215,9 @@ export const GetAssessmentResponse = zod.object({
   "band": zod.string(),
   "pathway": zod.string(),
   "urgent": zod.boolean(),
-  "safeguardingFlag": zod.boolean()
+  "safeguardingFlag": zod.boolean(),
+  "pregnant": zod.boolean().optional(),
+  "engineVersion": zod.string().optional()
 })
 
 
@@ -266,7 +351,8 @@ export const GetDashboardSummaryResponse = zod.object({
   "id": zod.number().int(),
   "title": zod.string(),
   "body": zod.string(),
-  "unread": zod.boolean()
+  "unread": zod.boolean(),
+  "createdAt": zod.string().optional()
 }))
 })
 
@@ -282,7 +368,8 @@ export const ListCasesResponseItem = zod.object({
   "district": zod.string(),
   "status": zod.string(),
   "riskLevel": zod.string(),
-  "assignedTo": zod.string()
+  "assignedTo": zod.string(),
+  "consentStatus": zod.string()
 })
 export const ListCasesResponse = zod.array(ListCasesResponseItem)
 
@@ -598,7 +685,8 @@ export const CreateStaffUserBody = zod.object({
   "name": zod.string(),
   "email": zod.string(),
   "role": zod.string(),
-  "district": zod.string()
+  "district": zod.string(),
+  "password": zod.string().optional()
 })
 
 export const CreateStaffUserResponse = zod.object({
@@ -609,6 +697,257 @@ export const CreateStaffUserResponse = zod.object({
   "roleLabel": zod.string(),
   "district": zod.string(),
   "status": zod.string()
+})
+
+
+/**
+ * @summary Suspend or reactivate a staff account
+ */
+export const UpdateStaffUserStatusParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+export const UpdateStaffUserStatusBody = zod.object({
+  "status": zod.string()
+})
+
+export const UpdateStaffUserStatusResponse = zod.object({
+  "id": zod.number().int(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "role": zod.string(),
+  "roleLabel": zod.string(),
+  "district": zod.string(),
+  "status": zod.string()
+})
+
+
+/**
+ * @summary Remove a staff account
+ */
+export const DeleteStaffUserParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+export const DeleteStaffUserResponse = zod.void()
+
+
+/**
+ * @summary List all learning content, including drafts
+ */
+export const ListAllContentResponseItem = zod.object({
+  "id": zod.number().int(),
+  "title": zod.string(),
+  "slug": zod.string(),
+  "category": zod.string(),
+  "mediaType": zod.string(),
+  "excerpt": zod.string(),
+  "body": zod.string().optional(),
+  "duration": zod.string(),
+  "featured": zod.boolean().optional(),
+  "reviewStatus": zod.string().optional()
+})
+export const ListAllContentResponse = zod.array(ListAllContentResponseItem)
+
+
+/**
+ * @summary Create a learning content item (starts as draft)
+ */
+export const CreateContentBody = zod.object({
+  "title": zod.string(),
+  "slug": zod.string().optional(),
+  "category": zod.string(),
+  "mediaType": zod.string(),
+  "excerpt": zod.string().optional(),
+  "body": zod.string().optional(),
+  "duration": zod.string().optional(),
+  "featured": zod.boolean().optional(),
+  "reviewStatus": zod.string().optional()
+})
+
+export const CreateContentResponse = zod.object({
+  "id": zod.number().int(),
+  "title": zod.string(),
+  "slug": zod.string(),
+  "category": zod.string(),
+  "mediaType": zod.string(),
+  "excerpt": zod.string(),
+  "body": zod.string().optional(),
+  "duration": zod.string(),
+  "featured": zod.boolean().optional(),
+  "reviewStatus": zod.string().optional()
+})
+
+
+/**
+ * @summary Update or approve a learning content item
+ */
+export const UpdateContentParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+export const UpdateContentBody = zod.object({
+  "title": zod.string(),
+  "slug": zod.string().optional(),
+  "category": zod.string(),
+  "mediaType": zod.string(),
+  "excerpt": zod.string().optional(),
+  "body": zod.string().optional(),
+  "duration": zod.string().optional(),
+  "featured": zod.boolean().optional(),
+  "reviewStatus": zod.string().optional()
+})
+
+export const UpdateContentResponse = zod.object({
+  "id": zod.number().int(),
+  "title": zod.string(),
+  "slug": zod.string(),
+  "category": zod.string(),
+  "mediaType": zod.string(),
+  "excerpt": zod.string(),
+  "body": zod.string().optional(),
+  "duration": zod.string(),
+  "featured": zod.boolean().optional(),
+  "reviewStatus": zod.string().optional()
+})
+
+
+/**
+ * @summary Reset all synthetic demo data back to the seeded state
+ */
+export const ResetDemoDataResponse = zod.object({
+  "ok": zod.boolean()
+})
+
+
+/**
+ * @summary Update the consent status recorded for a case
+ */
+export const UpdateCaseConsentParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+export const UpdateCaseConsentBody = zod.object({
+  "status": zod.string()
+})
+
+export const UpdateCaseConsentResponse = zod.object({
+  "id": zod.number().int(),
+  "caseRef": zod.string(),
+  "alias": zod.string(),
+  "subtype": zod.string(),
+  "district": zod.string(),
+  "status": zod.string(),
+  "riskLevel": zod.string(),
+  "assignedTo": zod.string(),
+  "consentStatus": zod.string()
+})
+
+
+/**
+ * @summary Get the current user's notifications
+ */
+export const ListNotificationsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.number().int(),
+  "title": zod.string(),
+  "body": zod.string(),
+  "unread": zod.boolean(),
+  "createdAt": zod.string().optional()
+})),
+  "unreadCount": zod.number().int()
+})
+
+
+/**
+ * @summary Mark a notification as read
+ */
+export const MarkNotificationReadParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+export const MarkNotificationReadResponse = zod.object({
+  "id": zod.number().int(),
+  "title": zod.string(),
+  "body": zod.string(),
+  "unread": zod.boolean(),
+  "createdAt": zod.string().optional()
+})
+
+
+/**
+ * @summary List reminders (simulated SMS/USSD and in-app)
+ */
+export const ListRemindersResponseItem = zod.object({
+  "id": zod.number().int(),
+  "relatedType": zod.string(),
+  "relatedId": zod.number().int(),
+  "recipientType": zod.string(),
+  "recipientRef": zod.string(),
+  "channel": zod.string(),
+  "message": zod.string(),
+  "sendAt": zod.string(),
+  "status": zod.string(),
+  "createdAt": zod.string().optional()
+})
+export const ListRemindersResponse = zod.array(ListRemindersResponseItem)
+
+
+/**
+ * @summary Process due reminders (simulated delivery, no real send)
+ */
+export const ProcessRemindersResponse = zod.object({
+  "processed": zod.number().int(),
+  "total": zod.number().int()
+})
+
+
+/**
+ * @summary List rights/legal escalations
+ */
+export const ListRightsEscalationsResponseItem = zod.object({
+  "id": zod.number().int(),
+  "caseRef": zod.string(),
+  "note": zod.string(),
+  "raisedBy": zod.string(),
+  "status": zod.string(),
+  "createdAt": zod.string()
+})
+export const ListRightsEscalationsResponse = zod.array(ListRightsEscalationsResponseItem)
+
+
+/**
+ * @summary Raise a rights/legal escalation for a case
+ */
+export const CreateRightsEscalationBody = zod.object({
+  "caseId": zod.number().int(),
+  "note": zod.string()
+})
+
+export const CreateRightsEscalationResponse = zod.object({
+  "id": zod.number().int(),
+  "caseRef": zod.string(),
+  "note": zod.string(),
+  "raisedBy": zod.string(),
+  "status": zod.string(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Resolve a rights/legal escalation
+ */
+export const ResolveRightsEscalationParams = zod.object({
+  "id": zod.coerce.number().int()
+})
+
+export const ResolveRightsEscalationResponse = zod.object({
+  "id": zod.number().int(),
+  "caseRef": zod.string(),
+  "note": zod.string(),
+  "raisedBy": zod.string(),
+  "status": zod.string(),
+  "createdAt": zod.string()
 })
 
 

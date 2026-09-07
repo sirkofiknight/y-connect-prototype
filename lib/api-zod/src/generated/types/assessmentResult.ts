@@ -13,4 +13,6 @@ export interface AssessmentResult {
   pathway: string;
   urgent: boolean;
   safeguardingFlag: boolean;
+  pregnant?: boolean;
+  engineVersion?: string;
 }

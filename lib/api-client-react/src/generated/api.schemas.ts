@@ -19,6 +19,19 @@ export interface ContentItem {
   body?: string;
   duration: string;
   featured?: boolean;
+  reviewStatus?: string;
+}
+
+export interface ContentItemInput {
+  title: string;
+  slug?: string;
+  category: string;
+  mediaType: string;
+  excerpt?: string;
+  body?: string;
+  duration?: string;
+  featured?: boolean;
+  reviewStatus?: string;
 }
 
 export interface ServicePoint {
@@ -34,6 +47,18 @@ export interface ServicePoint {
   phone: string;
 }
 
+export interface ServicePointInput {
+  name: string;
+  type: string;
+  district: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
+  services?: string[];
+  hours?: string;
+  phone?: string;
+}
+
 export type AssessmentInputAnswers = {[key: string]: string};
 
 export interface AssessmentInput {
@@ -47,6 +72,25 @@ export interface AssessmentResult {
   pathway: string;
   urgent: boolean;
   safeguardingFlag: boolean;
+  pregnant?: boolean;
+  engineVersion?: string;
+}
+
+export interface AssessmentQuestionOption {
+  value: string;
+  label: string;
+}
+
+export interface AssessmentQuestion {
+  code: string;
+  prompt: string;
+  inputType: string;
+  options?: AssessmentQuestionOption[];
+}
+
+export interface AssessmentQuestionSet {
+  engineVersion: string;
+  questions: AssessmentQuestion[];
 }
 
 export interface SupportRequestInput {
@@ -116,12 +160,50 @@ export interface Notification {
   title: string;
   body: string;
   unread: boolean;
+  createdAt?: string;
 }
 
 export interface DashboardSummary {
   metrics: DashboardMetric[];
   recentActivity: ActivityItem[];
   notifications: Notification[];
+}
+
+export interface NotificationFeed {
+  items: Notification[];
+  unreadCount: number;
+}
+
+export interface Reminder {
+  id: number;
+  relatedType: string;
+  relatedId: number;
+  recipientType: string;
+  recipientRef: string;
+  channel: string;
+  message: string;
+  sendAt: string;
+  status: string;
+  createdAt?: string;
+}
+
+export interface ReminderProcessResult {
+  processed: number;
+  total: number;
+}
+
+export interface RightsEscalationInput {
+  caseId: number;
+  note: string;
+}
+
+export interface RightsEscalation {
+  id: number;
+  caseRef: string;
+  note: string;
+  raisedBy: string;
+  status: string;
+  createdAt: string;
 }
 
 export interface ClientCase {
@@ -133,6 +215,11 @@ export interface ClientCase {
   status: string;
   riskLevel: string;
   assignedTo: string;
+  consentStatus: string;
+}
+
+export interface CaseConsentInput {
+  status: string;
 }
 
 export interface FollowupInput {
@@ -244,6 +331,11 @@ export interface StaffUserInput {
   email: string;
   role: string;
   district: string;
+  password?: string;
+}
+
+export interface StaffUserStatusInput {
+  status: string;
 }
 
 export type ListContentParams = {
@@ -253,5 +345,9 @@ category?: string;
 export type ListServicesParams = {
 district?: string;
 service?: string;
+};
+
+export type ResetDemoData200 = {
+  ok: boolean;
 };
 

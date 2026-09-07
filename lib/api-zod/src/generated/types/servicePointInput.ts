@@ -6,10 +6,14 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface StaffUserInput {
+export interface ServicePointInput {
   name: string;
-  email: string;
-  role: string;
+  type: string;
   district: string;
-  password?: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
+  services?: string[];
+  hours?: string;
+  phone?: string;
 }
