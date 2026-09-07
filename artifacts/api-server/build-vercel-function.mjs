@@ -3,18 +3,22 @@ import { fileURLToPath } from "node:url";
 import { build as esbuild } from "esbuild";
 
 // Bundles this Express app (already `export default app`-shaped, see app.ts) into a
-// single, dependency-free CommonJS file at artifacts/y-connect/api/index.cjs, for
-// Vercel to run as a serverless function. Vercel's Root Directory for this project is
-// artifacts/y-connect, so that's where its automatic function detection looks; a
-// flat, pre-bundled file there means Vercel has nothing left to resolve or trace
-// (no TypeScript, no ESM source, no pnpm workspace packages to figure out) — it's
-// called from y-connect's own "build" script, and the output is git-ignored.
+// single, dependency-free CommonJS file at the repo root's api/index.cjs, for Vercel
+// to run as a serverless function. This project's Vercel "Root Directory" is left at
+// the repo root (Vercel's zero-touch default on import — no dashboard setting to get
+// wrong), so that's where its automatic function detection looks. A flat, pre-bundled
+// file there means Vercel has nothing left to resolve or trace (no TypeScript, no ESM
+// source, no pnpm workspace packages to figure out) — it's called from y-connect's
+// own "build" script (which vercel.json's buildCommand invokes directly, targeted at
+// just that package, rather than the repo root's generic recursive build script that
+// would otherwise also try, and fail, to build unrelated packages). The output is
+// git-ignored and produced fresh on every build.
 //
-// The extension MUST be .cjs, not .js: y-connect's package.json has "type": "module",
-// so Node (and Vercel's Node runtime) would otherwise interpret this CommonJS bundle
-// (esbuild's `format: "cjs"` output, using `module.exports`) as ES module source and
-// fail with "module is not defined in ES module scope" — confirmed by hitting exactly
-// that error when this was still named index.js, before switching the extension.
+// The extension MUST be .cjs, not .js: if this ever ends up under a directory whose
+// nearest package.json has "type": "module" (y-connect's does), Node would otherwise
+// interpret this CommonJS bundle (esbuild's `format: "cjs"` output, using
+// `module.exports`) as ES module source and fail with "module is not defined in ES
+// module scope" — confirmed by hitting exactly that error before switching extensions.
 const artifactDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(artifactDir, "..", "..");
 
@@ -23,7 +27,7 @@ await esbuild({
   platform: "node",
   bundle: true,
   format: "cjs",
-  outfile: path.resolve(repoRoot, "artifacts/y-connect/api/index.cjs"),
+  outfile: path.resolve(repoRoot, "api/index.cjs"),
   logLevel: "info",
   external: ["*.node"],
   // Bake "production" in at build time instead of trusting Vercel to set NODE_ENV (or
