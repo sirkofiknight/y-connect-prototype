@@ -3,7 +3,7 @@
   "buildCommand": "pnpm --filter @workspace/y-connect run build",
   "outputDirectory": "artifacts/y-connect/dist/public",
   "functions": {
-    "api/index.js": {}
+    "api/index.js": { "maxDuration": 10 }
   },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
