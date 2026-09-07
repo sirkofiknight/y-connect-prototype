@@ -2,6 +2,9 @@
   "installCommand": "corepack enable && pnpm install --frozen-lockfile",
   "buildCommand": "pnpm --filter @workspace/y-connect run build",
   "outputDirectory": "artifacts/y-connect/dist/public",
+  "functions": {
+    "api/index.js": {}
+  },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/(.*)", "destination": "/index.html" }
