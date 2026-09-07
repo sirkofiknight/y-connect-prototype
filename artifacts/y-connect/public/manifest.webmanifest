@@ -1,0 +1,17 @@
+{
+  "name": "Y-Connect",
+  "short_name": "Y-Connect",
+  "description": "A quieter way to find a next step.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f0f7f8",
+  "theme_color": "#204d58",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

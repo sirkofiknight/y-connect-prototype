@@ -3,13 +3,17 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Y-Connect prototype API for synthetic data and discreet coordination workflows.
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: public
+    description: Public learning, assessment, directory and support flows
+  - name: staff
+    description: Role-gated staff workflows
 paths:
   /healthz:
     get:
@@ -24,6 +28,455 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /content:
+    get:
+      operationId: listContent
+      tags: [public]
+      summary: List approved learning content
+      parameters:
+        - in: query
+          name: category
+          schema: { type: string }
+      responses:
+        "200":
+          description: Content list
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ContentItem" }
+  /content/{slug}:
+    get:
+      operationId: getContent
+      tags: [public]
+      summary: Get one approved learning item
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Content item
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContentItem" }
+        "404": { description: Not found }
+  /services:
+    get:
+      operationId: listServices
+      tags: [public]
+      summary: List service points
+      parameters:
+        - in: query
+          name: district
+          schema: { type: string }
+        - in: query
+          name: service
+          schema: { type: string }
+      responses:
+        "200":
+          description: Service points
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ServicePoint" }
+  /services/{id}:
+    get:
+      operationId: getService
+      tags: [public]
+      summary: Get one service point
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Service point
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ServicePoint" }
+  /assessments:
+    post:
+      operationId: createAssessment
+      tags: [public]
+      summary: Score a deterministic self-assessment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AssessmentInput" }
+      responses:
+        "201":
+          description: Scored assessment
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AssessmentResult" }
+  /assessments/{id}:
+    get:
+      operationId: getAssessment
+      tags: [public]
+      summary: Get an assessment result
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Assessment result
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AssessmentResult" }
+  /support-requests:
+    post:
+      operationId: createSupportRequest
+      tags: [public]
+      summary: Request a human connection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SupportRequestInput" }
+      responses:
+        "201":
+          description: Support request
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SupportRequest" }
+    get:
+      operationId: listSupportRequests
+      tags: [staff]
+      summary: List support requests
+      responses:
+        "200":
+          description: Support requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SupportRequest" }
+  /safeguarding-reports:
+    post:
+      operationId: createSafeguardingReport
+      tags: [public]
+      summary: Submit a confidential concern
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SafeguardingInput" }
+      responses:
+        "201":
+          description: Report reference
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SafeguardingReceipt" }
+    get:
+      operationId: listSafeguardingReports
+      tags: [staff]
+      summary: List safeguarding queue
+      responses:
+        "200":
+          description: Restricted queue
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SafeguardingReport" }
+  /auth/login:
+    post:
+      operationId: login
+      tags: [public]
+      summary: Sign in to a synthetic staff account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LoginInput" }
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CurrentUser" }
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [staff]
+      summary: End current staff session
+      responses:
+        "204": { description: Logged out }
+  /auth/me:
+    get:
+      operationId: getCurrentUser
+      tags: [staff]
+      summary: Get current staff session
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CurrentUser" }
+        "401": { description: Not signed in }
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [staff]
+      summary: Role-aware dashboard summary
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DashboardSummary" }
+  /cases:
+    get:
+      operationId: listCases
+      tags: [staff]
+      summary: List role-visible pseudonymous cases
+      responses:
+        "200":
+          description: Cases
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ClientCase" }
+  /followups:
+    get:
+      operationId: listFollowups
+      tags: [staff]
+      summary: List follow-up tasks
+      responses:
+        "200":
+          description: Follow-up tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/FollowupTask" }
+    post:
+      operationId: createFollowup
+      tags: [staff]
+      summary: Create a follow-up task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/FollowupInput" }
+      responses:
+        "201":
+          description: Follow-up task
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FollowupTask" }
+  /followups/{id}:
+    get:
+      operationId: getFollowup
+      tags: [staff]
+      summary: Get follow-up detail
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Follow-up task
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FollowupTask" }
+  /followups/{id}/barrier:
+    post:
+      operationId: updateFollowupBarrier
+      tags: [staff]
+      summary: Record a barrier and alternative pathway
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/BarrierInput" }
+      responses:
+        "200":
+          description: Updated task
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FollowupTask" }
+  /followups/{id}/complete:
+    post:
+      operationId: completeFollowup
+      tags: [staff]
+      summary: Complete a follow-up
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Updated task
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FollowupTask" }
+  /referrals:
+    get:
+      operationId: listReferrals
+      tags: [staff]
+      summary: List referrals
+      responses:
+        "200":
+          description: Referrals
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Referral" }
+    post:
+      operationId: createReferral
+      tags: [staff]
+      summary: Create a referral
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ReferralInput" }
+      responses:
+        "201":
+          description: Referral
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Referral" }
+  /referrals/{id}/advance:
+    post:
+      operationId: advanceReferral
+      tags: [staff]
+      summary: Advance a referral
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ReferralAdvanceInput" }
+      responses:
+        "200":
+          description: Updated referral
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Referral" }
+  /eid/pairs:
+    get:
+      operationId: listEidPairs
+      tags: [staff]
+      summary: List mother-infant pairs
+      responses:
+        "200":
+          description: EID pairs
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/EidPair" }
+  /eid/pairs/{id}:
+    get:
+      operationId: getEidPair
+      tags: [staff]
+      summary: Get an EID timeline
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: EID pair
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/EidPair" }
+  /eid/milestones/{id}/complete:
+    post:
+      operationId: completeEidMilestone
+      tags: [staff]
+      summary: Complete an EID milestone
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/EidMilestoneInput" }
+      responses:
+        "200":
+          description: Updated EID pair
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/EidPair" }
+  /reports:
+    get:
+      operationId: getReports
+      tags: [staff]
+      summary: Get aggregated de-identified reports
+      responses:
+        "200":
+          description: Report metrics
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ReportMetrics" }
+  /audit:
+    get:
+      operationId: getAudit
+      tags: [staff]
+      summary: Get recent audit events
+      responses:
+        "200":
+          description: Audit entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/AuditEntry" }
+  /admin/users:
+    get:
+      operationId: listStaffUsers
+      tags: [staff]
+      summary: List synthetic staff accounts
+      responses:
+        "200":
+          description: Staff users
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/StaffUser" }
+    post:
+      operationId: createStaffUser
+      tags: [staff]
+      summary: Create a staff account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StaffUserInput" }
+      responses:
+        "201":
+          description: Staff user
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StaffUser" }
 components:
   schemas:
     HealthStatus:
@@ -33,4 +486,290 @@ components:
           type: string
       required:
         - status
+    ContentItem:
+      type: object
+      required: [id, title, slug, category, mediaType, excerpt, duration]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        slug: { type: string }
+        category: { type: string }
+        mediaType: { type: string }
+        excerpt: { type: string }
+        body: { type: string }
+        duration: { type: string }
+        featured: { type: boolean }
+    ServicePoint:
+      type: object
+      required: [id, name, type, district, address, latitude, longitude, services, hours, phone]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        type: { type: string }
+        district: { type: string }
+        address: { type: string }
+        latitude: { type: number }
+        longitude: { type: number }
+        services:
+          type: array
+          items: { type: string }
+        hours: { type: string }
+        phone: { type: string }
+    AssessmentInput:
+      type: object
+      required: [answers]
+      properties:
+        answers:
+          type: object
+          additionalProperties: { type: string }
+    AssessmentResult:
+      type: object
+      required: [id, total, band, pathway, urgent, safeguardingFlag]
+      properties:
+        id: { type: integer }
+        total: { type: integer }
+        band: { type: string }
+        pathway: { type: string }
+        urgent: { type: boolean }
+        safeguardingFlag: { type: boolean }
+    SupportRequestInput:
+      type: object
+      required: [requestedRole, preferredContact]
+      properties:
+        requestedRole: { type: string }
+        preferredContact: { type: string }
+        message: { type: string }
+    SupportRequest:
+      allOf:
+        - $ref: "#/components/schemas/SupportRequestInput"
+        - type: object
+          required: [id, caseRef, status, createdAt]
+          properties:
+            id: { type: integer }
+            caseRef: { type: string }
+            status: { type: string }
+            createdAt: { type: string }
+    SafeguardingInput:
+      type: object
+      required: [reporterType, category, severity, description]
+      properties:
+        reporterType: { type: string }
+        category: { type: string }
+        severity: { type: string }
+        description: { type: string }
+    SafeguardingReceipt:
+      type: object
+      required: [reference, status]
+      properties:
+        reference: { type: string }
+        status: { type: string }
+    SafeguardingReport:
+      allOf:
+        - $ref: "#/components/schemas/SafeguardingInput"
+        - type: object
+          required: [id, reference, status, createdAt]
+          properties:
+            id: { type: integer }
+            reference: { type: string }
+            status: { type: string }
+            createdAt: { type: string }
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string }
+        password: { type: string }
+    CurrentUser:
+      type: object
+      required: [id, name, email, role, roleLabel, initials, permissions]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string }
+        role: { type: string }
+        roleLabel: { type: string }
+        initials: { type: string }
+        permissions:
+          type: array
+          items: { type: string }
+    DashboardSummary:
+      type: object
+      required: [metrics, recentActivity, notifications]
+      properties:
+        metrics:
+          type: array
+          items: { $ref: "#/components/schemas/DashboardMetric" }
+        recentActivity:
+          type: array
+          items: { $ref: "#/components/schemas/ActivityItem" }
+        notifications:
+          type: array
+          items: { $ref: "#/components/schemas/Notification" }
+    DashboardMetric:
+      type: object
+      required: [label, value, detail, href, tone]
+      properties:
+        label: { type: string }
+        value: { type: integer }
+        detail: { type: string }
+        href: { type: string }
+        tone: { type: string }
+    ActivityItem:
+      type: object
+      required: [id, text, time, type]
+      properties:
+        id: { type: integer }
+        text: { type: string }
+        time: { type: string }
+        type: { type: string }
+    Notification:
+      type: object
+      required: [id, title, body, unread]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        body: { type: string }
+        unread: { type: boolean }
+    ClientCase:
+      type: object
+      required: [id, caseRef, alias, subtype, district, status, riskLevel, assignedTo]
+      properties:
+        id: { type: integer }
+        caseRef: { type: string }
+        alias: { type: string }
+        subtype: { type: string }
+        district: { type: string }
+        status: { type: string }
+        riskLevel: { type: string }
+        assignedTo: { type: string }
+    FollowupInput:
+      type: object
+      required: [caseId, type, dueDate]
+      properties:
+        caseId: { type: integer }
+        type: { type: string }
+        dueDate: { type: string }
+    FollowupTask:
+      allOf:
+        - $ref: "#/components/schemas/FollowupInput"
+        - type: object
+          required: [id, caseRef, alias, assignedTo, status, barrier, alternativePathway, overdue]
+          properties:
+            id: { type: integer }
+            caseRef: { type: string }
+            alias: { type: string }
+            assignedTo: { type: string }
+            status: { type: string }
+            barrier: { type: string }
+            alternativePathway: { type: string }
+            overdue: { type: boolean }
+    BarrierInput:
+      type: object
+      required: [barrier, alternativePathway]
+      properties:
+        barrier: { type: string }
+        alternativePathway: { type: string }
+    ReferralInput:
+      type: object
+      required: [caseId, targetService]
+      properties:
+        caseId: { type: integer }
+        targetService: { type: string }
+        servicePointId: { type: integer }
+        reason: { type: string }
+    Referral:
+      allOf:
+        - $ref: "#/components/schemas/ReferralInput"
+        - type: object
+          required: [id, caseRef, status, initiatedAt, servicePoint]
+          properties:
+            id: { type: integer }
+            caseRef: { type: string }
+            status: { type: string }
+            initiatedAt: { type: string }
+            servicePoint: { type: string }
+            completionNotes: { type: string }
+    ReferralAdvanceInput:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string }
+        completionNotes: { type: string }
+    EidMilestone:
+      type: object
+      required: [id, name, dueDate, status, result]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        dueDate: { type: string }
+        status: { type: string }
+        result: { type: string }
+    EidPair:
+      type: object
+      required: [id, motherRef, infantRef, district, progress, nextDue, milestones]
+      properties:
+        id: { type: integer }
+        motherRef: { type: string }
+        infantRef: { type: string }
+        district: { type: string }
+        progress: { type: integer }
+        nextDue: { type: string }
+        milestones:
+          type: array
+          items: { $ref: "#/components/schemas/EidMilestone" }
+    EidMilestoneInput:
+      type: object
+      required: [result]
+      properties:
+        result: { type: string }
+    ReportMetrics:
+      type: object
+      required: [assessments, referrals, followups, eid, supportRequests, safeguarding]
+      properties:
+        assessments:
+          type: object
+          additionalProperties: { type: integer }
+        referrals:
+          type: object
+          additionalProperties: { type: integer }
+        followups:
+          type: object
+          additionalProperties: { type: integer }
+        eid:
+          type: object
+          additionalProperties: { type: integer }
+        supportRequests:
+          type: object
+          additionalProperties: { type: integer }
+        safeguarding:
+          type: object
+          additionalProperties: { type: integer }
+    AuditEntry:
+      type: object
+      required: [id, action, entity, actor, time]
+      properties:
+        id: { type: integer }
+        action: { type: string }
+        entity: { type: string }
+        actor: { type: string }
+        time: { type: string }
+    StaffUser:
+      type: object
+      required: [id, name, email, role, roleLabel, district, status]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string }
+        role: { type: string }
+        roleLabel: { type: string }
+        district: { type: string }
+        status: { type: string }
+    StaffUserInput:
+      type: object
+      required: [name, email, role, district]
+      properties:
+        name: { type: string }
+        email: { type: string }
+        role: { type: string }
+        district: { type: string }
 

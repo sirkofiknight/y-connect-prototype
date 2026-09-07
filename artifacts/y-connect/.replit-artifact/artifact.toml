@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Y-Connect"
+description = "A discreet, youth-friendly connection platform prototype for learning, self-assessment, service discovery, human support requests, and coordinated staff follow-up."
+version = "1.0.0"
+id = "artifacts/y-connect"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23825
+
+[services.development]
+run = "pnpm --filter @workspace/y-connect run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/y-connect", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/y-connect/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23825"
+BASE_PATH = "/"
