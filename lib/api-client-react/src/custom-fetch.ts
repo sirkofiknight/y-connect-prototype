@@ -360,7 +360,10 @@ export async function customFetch<T = unknown>(
 
   const requestInfo = { method, url: resolveUrl(input) };
 
-  const response = await fetch(input, { ...init, method, headers });
+  // Default to sending cookies even when the API lives on a different origin
+  // (e.g. a Vercel-hosted frontend calling a Render-hosted API). Callers can
+  // still override via an explicit `credentials` option.
+  const response = await fetch(input, { credentials: "include", ...init, method, headers });
 
   if (!response.ok) {
     const errorData = await parseErrorBody(response, method);

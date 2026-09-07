@@ -299,6 +299,12 @@ function resetAll() {
   nextId = clone.nextId;
 }
 
+// Cross-site cookies (frontend and API on different domains, e.g. Vercel + Render)
+// require SameSite=None with Secure; same-site local dev needs Lax without Secure,
+// since browsers only honor Secure cookies over HTTPS.
+const crossSite = process.env.NODE_ENV === "production";
+const sessionCookieOptions = { httpOnly: true, sameSite: crossSite ? ("none" as const) : ("lax" as const), secure: crossSite };
+
 function currentUser(req: Request): User | null {
   const id = Number(req.header("x-yc-user") ?? req.cookies?.yc_user ?? 0);
   return users.find((user) => user.id === id && user.status === "active") ?? null;
@@ -496,7 +502,7 @@ router.post("/auth/login", (req, res) => {
     res.status(401).json({ error: "Invalid credentials" });
     return;
   }
-  res.cookie("yc_user", String(user.id), { httpOnly: true, sameSite: "lax" });
+  res.cookie("yc_user", String(user.id), sessionCookieOptions);
   addAudit("login", "session", user.name);
   res.json(userPayload(user));
 });
@@ -504,7 +510,7 @@ router.post("/auth/login", (req, res) => {
 router.post("/auth/logout", (req, res) => {
   const user = currentUser(req);
   if (user) addAudit("logout", "session", user.name);
-  res.clearCookie("yc_user");
+  res.clearCookie("yc_user", sessionCookieOptions);
   res.status(204).send();
 });
 

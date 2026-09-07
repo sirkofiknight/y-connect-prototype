@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: y-connect-api
+    runtime: node
+    plan: free
+    buildCommand: corepack enable && corepack prepare pnpm@10.34.5 --activate && pnpm install --frozen-lockfile && pnpm --filter @workspace/api-server run build
+    startCommand: pnpm --filter @workspace/api-server run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Set this to your Vercel deployment's exact origin (e.g. https://y-connect-prototype.vercel.app)
+      # once you know it — required for cross-origin cookies to work.
+      - key: ALLOWED_ORIGINS
+        sync: false
